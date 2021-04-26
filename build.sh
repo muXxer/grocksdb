@@ -1,4 +1,6 @@
 #!/bin/bash
+set -eo pipefail
+
 DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 INSTALL_PREFIX=$1
@@ -10,6 +12,13 @@ BUILD_PATH=/tmp/build
 mkdir -p $BUILD_PATH
 
 CMAKE_REQUIRED_PARAMS="-DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}"
+
+if [ "$GOARCH" == "arm64" ]; then
+	export CC=aarch64-linux-gnu-gcc
+	export CXX=aarch64-linux-gnu-g++
+	export DIST_DIR=${INSTALL_PREFIX}
+	CMAKE_REQUIRED_PARAMS="-DCMAKE_TOOLCHAIN_FILE=${DIRECTORY}/arm64.cmake ${CMAKE_REQUIRED_PARAMS}"
+fi
 
 zlib_version="1.2.11"
 cd $BUILD_PATH && wget https://github.com/madler/zlib/archive/v${zlib_version}.tar.gz && tar xzf v${zlib_version}.tar.gz && cd zlib-${zlib_version} && \
