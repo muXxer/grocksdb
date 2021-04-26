@@ -9,6 +9,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    container: gohornet/goreleaser-cgo-cross-compiler:1.16.3
     steps:
 
     - name: checkout-repo
@@ -27,5 +28,5 @@ jobs:
         git config user.email github-actions@github.com
         git add dist
         git commit -m "Build static libs for RocksDB v${{ steps.parse-version.outputs.ROCKSDB_VERSION }}"
-        git checkout -b "release/hornet-master-rocksdb-${{ steps.parse-version.outputs.ROCKSDB_VERSION }}"
-        git push --set-upstream origin "release/hornet-master-rocksdb-${{ steps.parse-version.outputs.ROCKSDB_VERSION }}"
+        git checkout -b "release/hornet-rocksdb-${{ steps.parse-version.outputs.ROCKSDB_VERSION }}"
+        git push --set-upstream origin "release/hornet-rocksdb-${{ steps.parse-version.outputs.ROCKSDB_VERSION }}"
