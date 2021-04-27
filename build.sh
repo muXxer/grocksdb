@@ -5,8 +5,7 @@ DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 INSTALL_PREFIX=$1
 
-export CFLAGS='-fPIC -O3 -pipe -funroll-loops' 
-export CXXFLAGS='-fPIC -O3 -pipe -funroll-loops'
+BUILD_FLAGS="-fPIC -O3 -pipe -funroll-loops"
 
 BUILD_PATH=/tmp/build
 mkdir -p $BUILD_PATH
@@ -14,11 +13,17 @@ mkdir -p $BUILD_PATH
 CMAKE_REQUIRED_PARAMS="-DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}"
 
 if [ "$GOARCH" == "arm64" ]; then
-	export CC=aarch64-linux-gnu-gcc
-	export CXX=aarch64-linux-gnu-g++
-	export DIST_DIR=${INSTALL_PREFIX}
-	CMAKE_REQUIRED_PARAMS="-DCMAKE_TOOLCHAIN_FILE=${DIRECTORY}/arm64.cmake ${CMAKE_REQUIRED_PARAMS}"
+    export CC=aarch64-linux-gnu-gcc
+    export CXX=aarch64-linux-gnu-g++
+    export DIST_DIR=${INSTALL_PREFIX}
+    CMAKE_REQUIRED_PARAMS="-DCMAKE_TOOLCHAIN_FILE=${DIRECTORY}/arm64.cmake ${CMAKE_REQUIRED_PARAMS}"
+else
+    # Disable AVX512 since AMD and not all Intel CPUs support it
+    BUILD_FLAGS="-mno-avx512f ${BUILD_FLAGS}"
 fi
+
+export CFLAGS=${BUILD_FLAGS}
+export CXXFLAGS=${BUILD_FLAGS}
 
 zlib_version="1.2.11"
 cd $BUILD_PATH && wget https://github.com/madler/zlib/archive/v${zlib_version}.tar.gz && tar xzf v${zlib_version}.tar.gz && cd zlib-${zlib_version} && \
