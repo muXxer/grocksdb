@@ -27,6 +27,11 @@ jobs:
       env:
         GOARCH: arm64
 
+    - name: build-win-amd64
+      run: make libs
+      env:
+        GOOS: windows
+
     - name: commit-changes
       run: |
         git config user.name github-actions
