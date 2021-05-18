@@ -9,7 +9,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container: gohornet/goreleaser-cgo-cross-compiler:1.16.3
+    container: gohornet/goreleaser-cgo-cross-compiler:1.16.4
     steps:
 
     - name: checkout-repo
@@ -26,6 +26,11 @@ jobs:
       run: make libs
       env:
         GOARCH: arm64
+
+    - name: build-win-amd64
+      run: make libs
+      env:
+        GOOS: windows
 
     - name: commit-changes
       run: |
